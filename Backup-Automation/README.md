@@ -52,5 +52,4 @@ python backup_wizard.py
 3. **Streams** the file directly to the cloud to prevent duplicating data or exhausting local memory.
 
 ---
-` from your script to keep the repository code perfectly clean!
-> 
+ 

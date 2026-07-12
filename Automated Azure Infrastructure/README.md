@@ -1,57 +1,58 @@
-‎# Automated Azure Infrastructure Deployer
-‎
-‎An automated, portable cloud infrastructure deployment tool that utilizes a Python wrapper script to orchestrate, validate, and provision a secure Linux environment on Azure via Terraform.
-‎
-‎---
-‎
-‎## 🚀 Features
-‎
-‎* **Automated Sequential Execution**: Automatically executes `terraform init`, `terraform plan`, and `terraform apply` within a unified script workflow.
-‎* **Interactive Guardrails**: Implements a manual confirmation prompt following the planning phase to prevent accidental cloud deployments.
-‎* **Real-Time Output Streaming**: Leverages Python's `subprocess` system to pipe stdout directly to your console while handling execution errors gracefully.
-‎* **Decoupled Architecture**: Utilizes localized variables for region and instance definitions to maximize code portability across distinct Azure tenants.
-‎---
-‎
-‎## 🏗️ Architecture Components
-‎
-‎The underlying Terraform script builds a fully integrated, functional network and compute layer following a precise configuration sequence:
-‎
-‎* **1. Resource Group**: Allocates the logical management container `automate-backup-rg` to bound all resources within a target region.
-‎* **2. Virtual Network**: Establishes `automate-vnet` using a private `10.0.0.0/16` address space block.
-‎* **3. Subnet**: carves out a dedicated internal network slice (`10.0.1.0/24`) inside the parent Virtual Network framework.
-‎* **4. Public IP**: Allocates a static public IP endpoint named `automate-vm-ip` to ensure persistent external entry points.
-‎* **5. Network Security Group (NSG)**: Deploys the firewall baseline `allow_user_to_connect`, explicitly opening inbound access paths for Port 22 (SSH), Port 80 (HTTP), and Port 443 (HTTPS).
-‎* **6. Network Interface Card (NIC)**: Provisions `automate-vm-nic` to couple dynamic internal subnets directly with the static public IP route.
-‎* **7. NSG Association**: Formally binds the firewall rule structures of the NSG directly onto the virtual network interface card.
-‎* **8. Linux Virtual Machine**: Deploys an Ubuntu 22.04 LTS compute instance running on standard block storage with configured password credentials.
-‎
-‎---
-‎
-‎## ⚙️ Configuration & Variables
-‎
-‎Modify the input variables within `variables.tf` to repurpose this codebase for alternative application environments:
-‎
-‎| Variable Name | Description | Default Value |
-‎|---|---|---|
-‎| `azure_location` | Target Azure region deployment context for all system resources | `"centralindia"`[span_16](start_span)[span_16](end_span) |
-‎| `vm_size` | The cloud computation hardware footprint tier assigned to the instance | `"Standard_B2ats"` |
-‎
-‎---
-‎
-‎## 🛠️ Prerequisites
-‎
-‎* **Python 3.x Engine** installed locally on the host machine.
-‎* **Terraform CLI Binary** installed (Azure Provider version constraints configured to `~> 4.0`).
-‎* **Azure CLI Tool** installed and authenticated via shell context (`az login`).
-‎
-‎---
-‎
-‎## 💻 How To Run
-‎
-‎1. Clone this repository structure directly to your local development workspace.
-‎2. Open your system terminal environment and log into your Azure CLI account module.
-‎3. Launch the automated deployment manager script:
-‎   ```bash
-‎   python main.py
-‎4. Evaluate the structural planning dry-run printout displayed right inside your shell window.
-‎5. Type yes when prompted by the wrapper application to securely compile your live cloud topology.
+# Automated Azure Infrastructure Deployer
+
+A streamlined Infrastructure as Code (IaC) automation tool that combines **Python** and **Terraform** to provision a complete, secure cloud network and Linux virtual machine on Microsoft Azure. 
+
+Instead of manually running separate infrastructure commands, the Python wrapper safely orchestrates the entire Terraform lifecycle (`init`, `plan`, `apply`) with real-time feedback and an explicit deployment safety confirmation.
+
+---
+
+## 🏗️ Architecture & Resources Provisioned
+
+The Terraform configuration automatically builds out a standard, production-ready cloud architecture:
+
+*   **Resource Group:** Acts as the logical container for all components (`automate-backup-rg`).
+*   **Virtual Network (VNet):** Configured with a dedicated `10.0.0.0/16` address space.
+*   **Subnet:** An internal subnet mapped to `10.0.1.0/24`.
+*   **Public IP Address:** A static IP address allocated to allow external connectivity.
+*   **Network Security Group (NSG):** Pre-configured with firewall rules for essential ports:
+    *   `Port 22` (SSH)
+    *   `Port 80` (HTTP)
+    *   `Port 443` (HTTPS)
+*   **Network Interface (NIC):** Links the VM to the subnet and attaches the Static Public IP and NSG.
+*   **Linux Virtual Machine:** An Ubuntu Server 22.04 LTS instance (`Standard_B2ats`) provisioned with a 30 GB standard OS disk.
+
+---
+
+## 🛠️ Repository Structure
+
+*   `main.py` - The Python script utilizing `subprocess` to manage the lifecycle workflow.
+*   `main.tf` - Defines the Azure provider and the concrete infrastructure resource declarations.
+*   `variables.tf` - Declares variables for easy configuration (e.g., setting the default region to Central India and the VM sizing).
+
+---
+
+## 🚀 How It Works (Code Analysis)
+
+### 1. The Automation Wrapper (`main.py`)
+The Python script handles execution flow and error management securely:
+*   **Real-time Output:** Uses `subprocess.run()` to transparently stream Terraform console outputs straight to your screen.
+*   **Error Interception:** If a phase (like initialization or planning) fails, the script catches the `CalledProcessError`, prints a clean error log, and exits gracefully before trying to deploy faulty code.
+*   **Safety Checkpoint:** Halts execution right after the planning phase, prompting you for a mandatory `yes/no` confirmation before executing the final `-auto-approve` block.
+
+### 2. Infrastructure as Code (`main.tf` & `variables.tf`)
+*   **Providers:** Bound to the HashiCorp `azurerm` provider (`~> 4.0`).
+*   **Security Context:** Explicitly associates the NSG directly to the network interface card via an association resource, keeping inbound traffic bounded tightly to explicit administrative ports.
+
+---
+
+## 📋 Prerequisites
+
+Before running the script, ensure you have the following installed and configured on your machine:
+
+1. [Python 3.x](https://www.python.org/)
+2. [Terraform CLI](https://developer.hashicorp.com/terraform/downloads)
+3. [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+
+Make sure you are authenticated to your Azure account in your terminal:
+```bash
+az login

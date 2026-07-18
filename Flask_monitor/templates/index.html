@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux System Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .dashboard {
+            background-color: #202024;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 350px;
+        }
+        h2 { text-align: center; margin-top: 0; color: #04d361; }
+        .metric { margin: 2rem 0; }
+        .metric-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .progress-bar {
+            background-color: #29292e;
+            border-radius: 6px;
+            height: 16px;
+            overflow: hidden;
+        }
+        .progress {
+            background-color: #04d361;
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>System Monitor</h2>
+        
+        <div class="metric">
+            <div class="metric-header">
+                <span>CPU Usage</span>
+                <span id="cpu-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="cpu-bar" class="progress"></div>
+            </div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-header">
+                <span>RAM Usage</span>
+                <span id="ram-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="ram-bar" class="progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fetchMetrics() {
+            fetch('/api/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    // Update CPU
+                    document.getElementById('cpu-text').innerText = data.cpu + '%';
+                    document.getElementById('cpu-bar').style.width = data.cpu + '%';
+                    
+                    // Update RAM
+                    document.getElementById('ram-text').innerText = data.ram + '%';
+                    document.getElementById('ram-bar').style.width = data.ram + '%';
+                })
+                .catch(err => console.error('Error fetching metrics:', err));
+        }
+
+        // Fetch metrics every 2 seconds
+        setInterval(fetchMetrics, 2000);
+        // Initial fetch on page load
+        fetchMetrics();
+    </script>
+</body>
+</html>
